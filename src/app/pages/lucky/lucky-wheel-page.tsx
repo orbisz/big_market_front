@@ -64,11 +64,7 @@ export function LuckyWheelPage() {
             return;
         }
         // 为了方便测试，mock 的接口直接返回 awardIndex 也就是奖品列表中第几个奖品。
-        return data.awardIndex ? data.awardIndex : prizes.findIndex(prize =>
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            prize.fonts.some(font => font.id === data.awardId)
-        ) + 1;
+        return data.awardIndex - 1;
     }
 
     useEffect(() => {
