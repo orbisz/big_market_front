@@ -1,1 +1,1 @@
-docker build -t orbisz/big-market-front-app:1.0 .
+docker build -t orbiszx/big-market-front-app:1.0 .
