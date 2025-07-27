@@ -3,10 +3,10 @@ const apiHostUrl = process.env.API_HOST_URL ? process.env.API_HOST_URL : "https:
 
 /**
  * 装配抽奖
- * @param strategyId
+ * @param activityId
  */
-export const strategyArmory = (strategyId?: number) => {
-    return fetch(`${apiHostUrl}/api/v1/raffle/strategy_armory?strategyId=${strategyId}`, {
+export const activityStrategyArmory = (activityId?: number) => {
+    return fetch(`${apiHostUrl}/api/v1/raffle/activity/armory?activityId=${activityId}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -16,17 +16,19 @@ export const strategyArmory = (strategyId?: number) => {
 
 /**
  * 查询抽奖奖品列表
- * @param strategyId 策略ID
+ * @param userId 用户ID
+ * @param activityId 用户ID
  */
-export const queryRaffleAwardList = (strategyId?: number) => {
+export const queryRaffleAwardList = (userId?: string, activityId?: number) => {
     try {
-        return fetch(`${apiHostUrl}/api/v1/raffle/query_raffle_award_list`, {
+        return fetch(`${apiHostUrl}/api/v1/raffle/strategy/query_raffle_award_list`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                strategyId: strategyId
+                userId: userId,
+                activityId: activityId
             })
         });
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -40,28 +42,20 @@ export const queryRaffleAwardList = (strategyId?: number) => {
 }
 
 /**
- * 随机抽奖接口
- * @param strategyId 策略ID
- *
- * {
- * 	"code": "0000",
- * 	"info": "调用成功",
- * 	"data": {
- * 	    "awardIndex": 1, // awardIndex 获得的是列表中第几个奖品，方便测试使用
- * 		"awardId": 535,
- * 		"awardTitle": "一部手机"
- * 	}
- * }
+ * 抽奖接口
+ * @param userId 用户ID
+ * @param activityId 用户ID
  */
-export const randomRaffle = (strategyId?: number) => {
+export const draw = (userId?: string, activityId?: number) => {
     try {
-        return fetch(`${apiHostUrl}/api/v1/raffle/random_raffle`, {
+        return fetch(`${apiHostUrl}/api/v1/raffle/activity/draw`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json;charset=utf-8'
             },
             body: JSON.stringify({
-                strategyId: strategyId
+                userId: userId,
+                activityId: activityId
             })
         })
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -73,3 +67,160 @@ export const randomRaffle = (strategyId?: number) => {
             "}");
     }
 }
+
+/**
+ * 查询账户额度
+ * @param userId        用户ID
+ * @param activityId    活动ID
+ */
+export const queryUserActivityAccount = (userId?: string, activityId?: number) => {
+    try {
+        return fetch(`${apiHostUrl}/api/v1/raffle/activity/query_user_activity_account`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                activityId: activityId
+            })
+        })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return fetch("{\n" +
+            "    \"code\": \"0001\",\n" +
+            "    \"info\": \"调用失败\",\n" +
+            "    \"data\": [\n" +
+            "}");
+    }
+}
+
+/**
+ * 日历签到返利接口
+ * @param userId
+ */
+export const calendarSignRebate = (userId?: string) => {
+    try {
+        return fetch(`${apiHostUrl}/api/v1/raffle/activity/calendar_sign_rebate?userId=${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return fetch("{\n" +
+            "    \"code\": \"0001\",\n" +
+            "    \"info\": \"调用失败\",\n" +
+            "    \"data\": [\n" +
+            "}");
+    }
+}
+
+/**
+ * 判断是否签到接口
+ * @param userId
+ */
+export const isCalendarSignRebate = (userId?: string) => {
+    try {
+        return fetch(`${apiHostUrl}/api/v1/raffle/activity/is_calendar_sign_rebate?userId=${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return fetch("{\n" +
+            "    \"code\": \"0001\",\n" +
+            "    \"info\": \"调用失败\",\n" +
+            "    \"data\": [\n" +
+            "}");
+    }
+}
+
+/**
+ * 查询权重规则
+ * @param userId        用户ID
+ * @param activityId    活动ID
+ */
+export const queryRaffleStrategyRuleWeight = (userId?: string, activityId?: number) => {
+    try {
+        return fetch(`${apiHostUrl}/api/v1/raffle/strategy/query_raffle_strategy_rule_weight`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                activityId: activityId
+            })
+        })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return fetch("{\n" +
+            "    \"code\": \"0001\",\n" +
+            "    \"info\": \"调用失败\",\n" +
+            "    \"data\": [\n" +
+            "}");
+    }
+}
+
+export const queryUserCreditAccount = (userId?: string)=>{
+    try {
+        return fetch(`${apiHostUrl}/api/v1/raffle/activity/query_user_credit_account?userId=${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return fetch("{\n" +
+            "    \"code\": \"0001\",\n" +
+            "    \"info\": \"调用失败\",\n" +
+            "    \"data\": [\n" +
+            "}");
+    }
+}
+
+export const querySkuProductListByActivityId = (activityId?: number)=>{
+    try {
+        return fetch(`${apiHostUrl}/api/v1/raffle/activity/query_sku_product_list_by_activity_id?activityId=${activityId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return fetch("{\n" +
+            "    \"code\": \"0001\",\n" +
+            "    \"info\": \"调用失败\",\n" +
+            "    \"data\": [\n" +
+            "}");
+    }
+}
+
+export const creditPayExchangeSku = (userId?: string, sku?: number) => {
+    try {
+        return fetch(`${apiHostUrl}/api/v1/raffle/activity/credit_pay_exchange_sku`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                sku: sku
+            })
+        })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return fetch("{\n" +
+            "    \"code\": \"0001\",\n" +
+            "    \"info\": \"调用失败\",\n" +
+            "    \"data\": [\n" +
+            "}");
+    }
+}
+

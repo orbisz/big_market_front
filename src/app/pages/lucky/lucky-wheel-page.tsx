@@ -1,23 +1,25 @@
-"use client";
+"use client"
 
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-expect-error
+// @ts-expect-error
 import {LuckyWheel} from '@lucky-canvas/react'
 
-import {queryRaffleAwardList, randomRaffle} from '@/apis'
+import {queryRaffleAwardList, draw} from '@/apis'
 import {RaffleAwardVO} from "@/types/RaffleAwardVO";
 
-export function LuckyWheelPage() {
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
+export function LuckyWheelPage({handleRefresh}) {
     const [prizes, setPrizes] = useState([{}])
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     const myLucky = useRef()
-    /*
+
     const [blocks] = useState([
         {padding: '10px', background: '#869cfa', imgs: [{src: "https://bugstack.cn/images/system/blog-03.png"}]}
     ])
-    */
+
     const [buttons] = useState([
         {radius: '40%', background: '#617df2'},
         {radius: '35%', background: '#afc8ff'},
@@ -31,8 +33,9 @@ export function LuckyWheelPage() {
     // 查询奖品列表
     const queryRaffleAwardListHandle = async () => {
         const queryParams = new URLSearchParams(window.location.search);
-        const strategyId = Number(queryParams.get('strategyId'));
-        const result = await queryRaffleAwardList(strategyId);
+        const userId = String(queryParams.get('userId'));
+        const activityId = Number(queryParams.get('activityId'));
+        const result = await queryRaffleAwardList(userId, activityId);
         const {code, info, data} = await result.json();
         if (code != "0000") {
             window.alert("获取抽奖奖品列表失败 code:" + code + " info:" + info)
@@ -54,13 +57,13 @@ export function LuckyWheelPage() {
 
     // 调用随机抽奖
     const randomRaffleHandle = async () => {
-
         const queryParams = new URLSearchParams(window.location.search);
-        const strategyId = Number(queryParams.get('strategyId'));
-        const result = await randomRaffle(strategyId);
+        const userId = String(queryParams.get('userId'));
+        const activityId = Number(queryParams.get('activityId'));
+        const result = await draw(userId, activityId);
         const {code, info, data} = await result.json();
         if (code != "0000") {
-            window.alert("获取抽奖奖品列表失败 code:" + code + " info:" + info)
+            window.alert("随机抽奖失败 code:" + code + " info:" + info)
             return;
         }
         // 为了方便测试，mock 的接口直接返回 awardIndex 也就是奖品列表中第几个奖品。
@@ -78,7 +81,7 @@ export function LuckyWheelPage() {
             ref={myLucky}
             width="300px"
             height="300px"
-            //blocks={blocks}
+            blocks={blocks}
             prizes={prizes}
             buttons={buttons}
             onStart={() => {
@@ -89,8 +92,16 @@ export function LuckyWheelPage() {
                     // 抽奖接口
                     randomRaffleHandle().then(prizeIndex => {
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-expect-error
+                            // @ts-expect-error
                             myLucky.current.stop(prizeIndex);
+
+                            const timer = setTimeout(() => {
+                                handleRefresh()
+                            }, 550);
+
+                            // 清除定时器，以防组件在执行前被卸载
+                            return () => clearTimeout(timer);
+
                         }
                     );
 
@@ -102,8 +113,7 @@ export function LuckyWheelPage() {
                 prize => {
                     alert('恭喜你抽到【' + prize.fonts[0].text + '】奖品ID【' + prize.fonts[0].id + '】')
                 }
-            }>
-
-        </LuckyWheel>
+            }
+        />
     </div>
 }
