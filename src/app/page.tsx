@@ -59,7 +59,7 @@ export default function Home() {
             {/* 底部文案 */}
             <footer className="text-gray-600 text-center my-8" style={{color: "white"}}>
                 源启智链 - 抽奖模块 <a href='https://orbisz.github.io/'
-                                                        target='_blank' color={"#0092ff"}>https://orbisz.github.io/</a> @小傅哥
+                                                        target='_blank' color={"#0092ff"}>https://orbisz.github.io/</a> @orbisz
             </footer>
         </div>
     );

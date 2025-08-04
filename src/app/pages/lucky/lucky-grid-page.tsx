@@ -124,7 +124,7 @@ export function LuckyGridPage({handleRefresh}) {
         const userId = String(queryParams.get('userId'));
         const activityId = Number(queryParams.get('activityId'));
 
-        let result = await draw(userId, activityId);
+        const result = await draw(userId, activityId);
         const {code, info, data} = await result.json();
         if (code != "0000") {
             window.alert("随机抽奖失败 code:" + code + " info:" + info)

@@ -79,6 +79,7 @@ export function SkuProduct({handleRefresh}) {
                             </div>
                         </div>
                     ))}
+
                 </div>
             </div>
 
