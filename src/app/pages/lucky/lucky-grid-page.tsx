@@ -37,26 +37,30 @@ export function LuckyGridPage({handleRefresh}) {
             {
                 x: 0,
                 y: 0,
-                fonts: [{text: data[0].awardTitle, top: '80%', fontSize: '12px', fontWeight: '800'}],
-                imgs: [{src: "/raffle-award-00.png", width: "100px", height: "100px", activeSrc: "/raffle-award.png"}]
+                fonts: [{text: data[0].awardTitle, top: '80%', fontSize: '12px', fontWeight: '800',
+                    fill: 'yellow'}],
+                imgs: [{src: "/raffle-award-00.png", width: "70px", height: "70px", activeSrc: "/raffle-award.png"}]
             },
             {
                 x: 1,
                 y: 0,
-                fonts: [{text: data[1].awardTitle, top: '80%', fontSize: '12px', fontWeight: '800'}],
-                imgs: [{src: "/raffle-award-01.png", width: "100px", height: "100px", activeSrc: "/raffle-award.png"}]
+                fonts: [{text: data[1].awardTitle, top: '80%', fontSize: '12px', fontWeight: '800',
+                    fill: '#FFFF00'}],
+                imgs: [{src: "/raffle-award-01.png", width: "70px", height: "70px", activeSrc: "/raffle-award.png"}]
             },
             {
                 x: 2,
                 y: 0,
-                fonts: [{text: data[2].awardTitle, top: '80%', fontSize: '12px', fontWeight: '800'}],
-                imgs: [{src: "/raffle-award-02.png", width: "100px", height: "100px", activeSrc: "/raffle-award.png"}]
+                fonts: [{text: data[2].awardTitle, top: '80%', fontSize: '12px', fontWeight: '800',
+                    fill: '#FFFF00'}],
+                imgs: [{src: "/raffle-award-02.png", width: "70px", height: "70px", activeSrc: "/raffle-award.png"}]
             },
             {
                 x: 2,
                 y: 1,
-                fonts: [{text: data[3].awardTitle, top: '80%', fontSize: '12px', fontWeight: '800'}],
-                imgs: [{src: "/raffle-award-12.png", width: "100px", height: "100px", activeSrc: "/raffle-award.png"}]
+                fonts: [{text: data[3].awardTitle, top: '80%', fontSize: '12px', fontWeight: '800',
+                    fill: '#FFFF00'}],
+                imgs: [{src: "/raffle-award-12.png", width: "70px", height: "70px", activeSrc: "/raffle-award.png"}]
             },
             {
                 x: 2,
@@ -65,12 +69,13 @@ export function LuckyGridPage({handleRefresh}) {
                     text: data[4].awardUnlock ? data[4].awardTitle : '再抽奖' + data[4].waitUnlockCount + '次解锁',
                     top: '80%',
                     fontSize: '12px',
-                    fontWeight: '800'
+                    fontWeight: '800',
+                    fill: '#FFFF00'
                 }],
                 imgs: [{
                     src: data[4].awardUnlock ? "/raffle-award-22.png" : "/raffle-award-22-lock.png",
-                    width: "100px",
-                    height: "100px",
+                    width: "70px",
+                    height: "70px",
                     activeSrc: "/raffle-award.png"
                 }]
             },
@@ -81,12 +86,13 @@ export function LuckyGridPage({handleRefresh}) {
                     text: data[5].awardUnlock ? data[5].awardTitle : '再抽奖' + data[5].waitUnlockCount + '次解锁',
                     top: '80%',
                     fontSize: '12px',
-                    fontWeight: '800'
+                    fontWeight: '800',
+                    fill: '#FFFF00'
                 }],
                 imgs: [{
                     src: data[5].awardUnlock ? "/raffle-award-21.png" : "/raffle-award-21-lock.png",
-                    width: "100px",
-                    height: "100px",
+                    width: "70px",
+                    height: "70px",
                     activeSrc: "/raffle-award.png"
                 }]
             },
@@ -97,12 +103,13 @@ export function LuckyGridPage({handleRefresh}) {
                     text: data[6].awardUnlock ? data[6].awardTitle : '再抽奖' + data[6].waitUnlockCount + '次解锁',
                     top: '80%',
                     fontSize: '12px',
-                    fontWeight: '800'
+                    fontWeight: '800',
+                    fill: '#FFFF00'
                 }],
                 imgs: [{
                     src: data[6].awardUnlock ? "/raffle-award-20.png" : "/raffle-award-20-lock.png",
-                    width: "100px",
-                    height: "100px",
+                    width: "70px",
+                    height: "70px",
                     activeSrc: "/raffle-award.png"
                 }]
             },
@@ -110,7 +117,7 @@ export function LuckyGridPage({handleRefresh}) {
                 x: 0,
                 y: 1,
                 fonts: [{text: data[7].awardTitle, top: '80%', fontSize: '12px', fontWeight: '800'}],
-                imgs: [{src: "/raffle-award-10.png", width: "100px", height: "100px", activeSrc: "/raffle-award.png"}]
+                imgs: [{src: "/raffle-award-10.png", width: "70px", height: "70px", activeSrc: "/raffle-award.png"}]
             },
         ]
 
