@@ -21,11 +21,20 @@ export default function Home() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-[#e7305e]"
-             style={{backgroundImage: "url('/background.svg')"}}>
+             style={{backgroundImage: "url('/img.png')",
+                 backgroundSize: 'cover',  // 或 'contain'，取决于您想要的覆盖效果
+                 backgroundRepeat: 'no-repeat',
+                 backgroundPosition: 'center',
+                 backgroundAttachment: 'fixed'  // 可选，使背景固定不动
+                  }}>
+
+
             {/* 头部文案 */}
             <header className="text-7xl font-bold text-center text-gray-800 my-8" style={{color: "white"}}>
-                源启智链平台 - 抽奖展示
+                幸运营销汇<br/>
+                🎉超级大奖福利<span style={{color: "#FFD700"}}>限量抽</span>🎉
             </header>
+
 
             {/* 会员卡 */}
             <MemberCardButton allRefresh={refresh}/>
@@ -33,10 +42,6 @@ export default function Home() {
 
             {/* 装配抽奖 */}
             <StrategyArmoryButton/>
-
-            {/* 商品 */}
-            <SkuProductButton handleRefresh={handleRefresh}/>
-
 
             {/* 中间的两个div元素 */}
             <div className="flex flex-col md:flex-row gap-4 mb-8">
@@ -52,13 +57,16 @@ export default function Home() {
                 </div>
             </div>
 
+
             <div className="flex items-center space-x-4">
                 <StrategyRuleWeightButton refresh={refresh}/>
             </div>
 
+            {/* 商品 */}
+            <SkuProductButton handleRefresh={handleRefresh}/>
             {/* 底部文案 */}
             <footer className="text-gray-600 text-center my-8" style={{color: "white"}}>
-                源启智链 - 抽奖模块 <a href='https://orbisz.github.io/'
+                幸运营销汇 <a href='https://orbisz.github.io/'
                                                         target='_blank' color={"#0092ff"}>https://orbisz.github.io/</a> @orbisz
             </footer>
         </div>

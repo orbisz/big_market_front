@@ -5,7 +5,7 @@ export function StrategyArmory() {
         const queryParams = new URLSearchParams(window.location.search);
         const activityId = Number(queryParams.get('activityId'));
         if (!activityId){
-            window.alert("请在请求地址中，配置 activityId 值，如：http://big-market.gaga.plus/?userId=orbisz&activityId=100301")
+            window.alert("请在请求地址中，配置 activityId 值，如：http://117.72.164.204:3000/?userId=zxy&activityId=100301")
             return;
         }
         const res = await activityStrategyArmory(activityId);
@@ -24,7 +24,7 @@ export function StrategyArmory() {
             style={{cursor: "pointer"}}
             onClick={strategyArmoryHandle}
         >
-            装配抽奖
+            装配抽奖 [测试前点击预热数据]
         </div>
     );
 }

@@ -117,12 +117,13 @@ export function MemberCard({allRefresh}) {
 
     return (
         <>
+
             <div
                 className="relative max-w-sm mx-auto bg-gradient-to-r from-blue-600 to-teal-600 rounded-xl shadow-xl overflow-hidden md:max-w-2xl mb-10">
                 <div className="md:flex">
                     <div className="p-8 flex-1">
                         <a href="#"
-                           className="block mt-1 text-2xl leading-tight font-semibold text-white hover:text-gray-300 transition duration-300 ease-in-out">营销会员卡</a>
+                           className="block mt-1 text-2xl leading-tight font-semibold text-white hover:text-gray-300 transition duration-300 ease-in-out">抽奖账户</a>
                         <div className="mt-4">
                             <p className="text-lg text-gray-100 flex items-center">
                                 <span className="material-icons mr-2">💰</span>
@@ -145,7 +146,7 @@ export function MemberCard({allRefresh}) {
                     <div className="p-8 flex items-center justify-between">
                         <button onClick={calendarSignRebateHandle} style={{cursor: "pointer"}}
                                 className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 ease-in-out">
-                            {sign ? "已签" : "签到"}
+                            {sign ? "已签✅" : "签到"}
                         </button>
                         <div className="text-gray-100 text-md font-semibold ml-4">
                             {formattedDate}
@@ -157,10 +158,11 @@ export function MemberCard({allRefresh}) {
                     刷新⌛️
                 </button>
                 <div
-                    className="absolute top-4 right-4 bg-gray-200/30 text-white font-bold py-1 px-3 rounded-full shadow-md">
+                    className="absolute top-4 right-4 bg-gray-200/30 bg-opacity-20 text-white font-bold py-1 px-3 rounded-full shadow-md">
                     id: {userId}
                 </div>
             </div>
+
 
         </>
     )
