@@ -1,6 +1,5 @@
 "use client";
 
-import {LuckyWheelPage} from "@/app/pages/lucky/lucky-wheel-page";
 import {LuckyGridPage} from "@/app/pages/lucky/lucky-grid-page";
 import dynamic from "next/dynamic";
 import {useState} from "react";
@@ -9,6 +8,7 @@ const StrategyArmoryButton = dynamic(async () => (await import("./components/Str
 const StrategyRuleWeightButton = dynamic(async () => (await import("./components/StrategyRuleWeight")).StrategyRuleWeight)
 const MemberCardButton = dynamic(async () => (await import("./components/MemberCard")).MemberCard)
 const SkuProductButton = dynamic(async () => (await import("./components/SkuProduct")).SkuProduct)
+const DrawRecords = dynamic(async () => (await import("./components/DrawRecords")).DrawRecords)
 
 export default function Home() {
 
@@ -22,10 +22,10 @@ export default function Home() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-[#e7305e]"
              style={{backgroundImage: "url('/img.png')",
-                 backgroundSize: 'cover',  // 或 'contain'，取决于您想要的覆盖效果
+                 backgroundSize: 'cover',
                  backgroundRepeat: 'no-repeat',
                  backgroundPosition: 'center',
-                 backgroundAttachment: 'fixed'  // 可选，使背景固定不动
+                 backgroundAttachment: 'fixed'
                   }}>
 
 
@@ -43,17 +43,18 @@ export default function Home() {
             {/* 装配抽奖 */}
             <StrategyArmoryButton/>
 
-            {/* 中间的两个div元素 */}
+            {/* 九宫格抽奖 + 抽奖记录 */}
             <div className="flex flex-col md:flex-row gap-4 mb-8">
-                <div className="w-full md:w-1/2 p-6 bg-white shadow-lg rounded-lg">
-                    <div className="text-gray-700">
-                        <LuckyWheelPage handleRefresh={handleRefresh}/>
-                    </div>
-                </div>
+                {/* 九宫格抽奖区域 */}
                 <div className="w-full md:w-1/2 p-6 bg-white shadow-lg rounded-lg">
                     <div className="text-gray-700">
                         <LuckyGridPage handleRefresh={handleRefresh}/>
                     </div>
+                </div>
+
+                {/* 抽奖记录面板 */}
+                <div className="w-full md:w-1/2">
+                    <DrawRecords/>
                 </div>
             </div>
 
