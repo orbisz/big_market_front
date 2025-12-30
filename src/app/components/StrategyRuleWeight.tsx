@@ -4,7 +4,8 @@ import {StrategyRuleWeightVO} from "@/types/StrategyRuleWeightVO";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
-export function StrategyRuleWeight({refresh}) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function StrategyRuleWeight({refresh, setRefresh}: {refresh: number, setRefresh?: (value: number) => void}) {
 
     const [strategyRuleWeightVOList, setStrategyRuleWeightVOList] = useState<StrategyRuleWeightVO[]>([]);
 
@@ -14,59 +15,12 @@ export function StrategyRuleWeight({refresh}) {
         const {code, info, data}: { code: string; info: string; data: StrategyRuleWeightVO[] } = await result.json();
 
         if (code != "0000") {
-            window.alert("查询活动账户额度，接口调用失败 code:" + code + " info:" + info)
+            console.error("查询策略权重失败 code:" + code + " info:" + info)
             return;
         }
 
         setStrategyRuleWeightVOList(data)
     }
-
-    // 这是你的进度条组件
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const ProgressBar = ({index, total, completed, awards}) => {
-        // 计算完成的百分比
-        const percentage = (completed / total) * 100;
-
-        return (
-            <div className="w-full" style={{width: '250px'}}> {/* 设置外部容器宽度为800px */}
-                <div className="flex items-center"> {/* 使用flex布局对齐文本和进度条 */}
-                    <div className="mr-2"> {/* 添加右边距以分隔文本和进度条 */}
-                        <span className="text-xs font-bold text-white">抽奖阶梯{index + 1}</span> {/* 文本样式 */}
-                    </div>
-                    <div
-                        className="bg-gray-200 rounded-full h-4 relative overflow-hidden flex-grow"> {/* 使用relative使得子元素可以绝对定位，添加overflow-hidden以确保圆角 */}
-                        <div
-                            className="bg-gradient-to-r from-blue-600 to-blue-400 h-4 rounded-full" // 设置内部进度条为向右的渐变色
-                            style={{width: `${percentage}%`}} // 设置内部进度条宽度为60%
-                        ></div>
-                        <div
-                            className="absolute right-0 top-0 h-4 flex items-center justify-end pr-1" // 使用absolute定位文本到最右侧，并使用justify-end使文本靠右对齐
-                            style={{width: `${100}%`}} // 确保文本容器覆盖整个进度条宽度
-                        >
-                            <span
-                                className="text-xs font-bold text-black">{completed > total ? total : completed}/{total}</span> {/* 文本样式为黑色加粗 */}
-                        </div>
-                    </div>
-                </div>
-                {
-                    awards && <div className="mt-2">
-                        <div className="text-xs text-black">必中奖品范围</div>
-                        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                        {// @ts-expect-error
-
-                            awards.map((award, idx) => (
-
-                                <div key={award.awardId} className="text-xs text-white">
-                                    {idx + 1}. {award.awardTitle}
-                                </div>
-                            ))}
-                    </div>
-                }
-
-            </div>
-        );
-    };
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -75,15 +29,51 @@ export function StrategyRuleWeight({refresh}) {
     }, [refresh])
 
     return (
-        <>
-            {strategyRuleWeightVOList.map((ruleWeight, index) => (
-                <div key={index}>
-                    <ProgressBar index={index} total={ruleWeight.ruleWeightCount}
-                                 completed={ruleWeight.userActivityAccountTotalUseCount}
-                                 awards={ruleWeight.strategyAwards}/>
-                </div>
-            ))}
-        </>
-    )
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {strategyRuleWeightVOList.map((ruleWeight, index) => {
+                const percentage = Math.min((ruleWeight.userActivityAccountTotalUseCount / ruleWeight.ruleWeightCount) * 100, 100);
 
+                return (
+                    <div key={index} className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+                        <div className="mb-3">
+                            <h3 className="text-sm font-semibold text-gray-700 mb-2">抽奖阶梯{index + 1}</h3>
+
+                            {/* 进度条 */}
+                            <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
+                                <div
+                                    className="h-full rounded-full transition-all duration-500"
+                                    style={{
+                                        width: `${percentage}%`,
+                                        backgroundColor: '#3B82F6'
+                                    }}
+                                />
+                            </div>
+
+                            {/* 进度文字 */}
+                            <div className="text-center mt-1">
+                                <span className="text-sm font-bold text-gray-800">
+                                    {ruleWeight.userActivityAccountTotalUseCount}/{ruleWeight.ruleWeightCount}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* 必中奖品范围 */}
+                        {ruleWeight.strategyAwards && ruleWeight.strategyAwards.length > 0 && (
+                            <div>
+                                <div className="text-xs text-gray-500 mb-2">必中奖品范围</div>
+                                <div className="space-y-1">
+                                    {ruleWeight.strategyAwards.map((award) => (
+                                        <div key={award.awardId} className="flex items-center text-xs text-gray-700">
+                                            <span className="mr-1" style={{color: '#F59E0B'}}>•</span>
+                                            <span className="truncate">{award.awardTitle}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
+        </div>
+    )
 }

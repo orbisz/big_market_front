@@ -8,6 +8,7 @@ import {LuckyGrid} from '@lucky-canvas/react'
 import {draw, queryRaffleAwardList, tenDraw} from "@/apis";
 import {RaffleAwardVO} from "@/types/RaffleAwardVO";
 import {DrawResult} from "@/types/TenDrawDTO";
+import {StrategyRuleWeight} from "@/app/components/StrategyRuleWeight";
 
 /**
  * 大转盘文档：https://100px.net/docs/grid.html
@@ -23,6 +24,15 @@ export function LuckyGridPage({handleRefresh}) {
     const [isTenDrawing, setIsTenDrawing] = useState(false)
     // 使用 ref 来跟踪十连抽是否已完成，避免 setState 的异步更新问题
     const isTenDrawInProgress = useRef(false)
+    // refresh 状态用于触发 StrategyRuleWeight 更新
+    const [refresh, setRefresh] = useState(0)
+
+    const triggerRefresh = () => {
+        setRefresh(refresh + 1)
+        if (handleRefresh) {
+            handleRefresh()
+        }
+    }
 
     const queryRaffleAwardListHandle = async () => {
         const queryParams = new URLSearchParams(window.location.search);
@@ -142,7 +152,7 @@ export function LuckyGridPage({handleRefresh}) {
             return;
         }
 
-        handleRefresh()
+        triggerRefresh()
 
         // 为了方便测试，mock 的接口直接返回 awardIndex 也就是奖品列表中第几个奖品。
         return data.awardIndex - 1;
@@ -228,7 +238,7 @@ export function LuckyGridPage({handleRefresh}) {
             setTimeout(() => {
                 setIsTenDrawing(false);
                 isTenDrawInProgress.current = false;
-                handleRefresh();
+                triggerRefresh();
                 queryRaffleAwardListHandle();
 
                 // 按照后端返回的顺序构建奖品列表字符串
@@ -268,59 +278,62 @@ export function LuckyGridPage({handleRefresh}) {
     }, [])
 
     return <>
-        <LuckyGrid
-            ref={myLucky}
-            width="300px"
-            height="300px"
-            rows="3"
-            cols="3"
-            prizes={prizes}
-            defaultStyle={defaultStyle}
-            buttons={buttons}
-            onStart={() => { // 点击抽奖按钮会触发star回调
-                // 如果是十连抽模式，不执行单抽流程
-                if (isTenDrawing || isTenDrawInProgress.current) {
-                    return;
-                }
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                myLucky.current.play()
-                setTimeout(() => {
-                    // 抽奖接口
-                    randomRaffleHandle().then(prizeIndex => {
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                            // @ts-expect-error
-                            myLucky.current.stop(prizeIndex);
-                        }
-                    );
-                }, 2500)
-            }}
-            onEnd={
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                prize => {
-                    // 如果是十连抽模式，不执行单抽的结果展示
+        {/* 九宫格抽奖区 */}
+        <div className="flex justify-center mb-4">
+            <LuckyGrid
+                ref={myLucky}
+                width="300px"
+                height="300px"
+                rows="3"
+                cols="3"
+                prizes={prizes}
+                defaultStyle={defaultStyle}
+                buttons={buttons}
+                onStart={() => { // 点击抽奖按钮会触发star回调
+                    // 如果是十连抽模式，不执行单抽流程
                     if (isTenDrawing || isTenDrawInProgress.current) {
                         return;
                     }
-                    // 加载数据
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                    queryRaffleAwardListHandle().then(r => {
-                    });
-                    // 展示奖品
-                    alert('恭喜抽中奖品💐【' + prize.fonts[0].text + '】')
-                }
-            }>
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    myLucky.current.play()
+                    setTimeout(() => {
+                        // 抽奖接口
+                        randomRaffleHandle().then(prizeIndex => {
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                // @ts-expect-error
+                                myLucky.current.stop(prizeIndex);
+                            }
+                        );
+                    }, 2500)
+                }}
+                onEnd={
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    prize => {
+                        // 如果是十连抽模式，不执行单抽的结果展示
+                        if (isTenDrawing || isTenDrawInProgress.current) {
+                            return;
+                        }
+                        // 加载数据
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        queryRaffleAwardListHandle().then(r => {
+                        });
+                        // 展示奖品
+                        alert('恭喜抽中奖品💐【' + prize.fonts[0].text + '】')
+                    }
+                }>
 
-        </LuckyGrid>
+            </LuckyGrid>
+        </div>
 
-        {/* 十连抽按钮 */}
-        <div className="mt-6 text-center">
+        {/* 暴走十连抽按钮 */}
+        <div className="text-center mb-4">
             <button
                 onClick={tenDrawHandle}
                 disabled={isTenDrawing}
                 className={`
-                    px-8 py-3 rounded-lg font-bold text-white text-lg
+                    px-8 py-3 rounded-lg font-bold text-white text-base
                     transition-all duration-300 transform hover:scale-105
                     ${isTenDrawing
                         ? 'bg-gray-400 cursor-not-allowed'
@@ -330,9 +343,11 @@ export function LuckyGridPage({handleRefresh}) {
             >
                 {isTenDrawing ? '抽奖中...' : '🎯 暴走10连抽'}
             </button>
-            {isTenDrawing && (
-                <p className="mt-2 text-sm text-gray-600">正在抽取10个奖品...</p>
-            )}
+        </div>
+
+        {/* 抽奖阶梯信息 */}
+        <div>
+            <StrategyRuleWeight refresh={refresh} setRefresh={setRefresh}/>
         </div>
     </>
 }
