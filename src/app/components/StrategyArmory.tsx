@@ -19,12 +19,19 @@ export function StrategyArmory() {
     }
 
     return (
-        <div
-            className="px-6 py-2 mb-8 text-white bg-blue-500 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            style={{cursor: "pointer"}}
-            onClick={strategyArmoryHandle}
-        >
-            装配抽奖 [测试前点击预热数据]
+        <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h2 className="text-base font-semibold text-gray-700 mb-1">装配抽奖</h2>
+                    <p className="text-xs text-gray-500">测试自动开启随机抽选</p>
+                </div>
+                <button
+                    onClick={strategyArmoryHandle}
+                    className="px-6 py-2 bg-orange-500 text-white rounded-lg font-medium text-sm hover:bg-orange-600 transition-colors"
+                >
+                    装配抽奖
+                </button>
+            </div>
         </div>
     );
 }

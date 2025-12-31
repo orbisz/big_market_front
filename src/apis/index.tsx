@@ -224,3 +224,73 @@ export const creditPayExchangeSku = (userId?: string, sku?: number) => {
     }
 }
 
+/**
+ * 十连抽接口
+ * @param userId 用户ID
+ * @param activityId 活动ID
+ */
+export const tenDraw = (userId?: string, activityId?: number) => {
+    try {
+        return fetch(`${apiHostUrl}/api/v1/raffle/activity/ten_draw`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                activityId: activityId
+            })
+        })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+        return fetch("{\n" +
+            "    \"code\": \"0001\",\n" +
+            "    \"info\": \"调用失败\",\n" +
+            "    \"data\": [\n" +
+            "}");
+    }
+}
+
+/**
+ * 查询用户抽奖中奖记录
+ * @param userId 用户ID
+ * @param limit 查询条数，默认10条，最大100条
+ */
+export const queryUserDrawRecords = async (userId?: string, limit: number = 10) => {
+    try {
+        const response = await fetch(`${apiHostUrl}/api/v1/raffle/activity/query_user_award_record_list`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8'
+            },
+            body: JSON.stringify({
+                userId: userId,
+                limit: limit
+            })
+        });
+
+        // 检查响应状态
+        if (!response.ok) {
+            console.error(`queryUserDrawRecords: HTTP ${response.status}`);
+            return {
+                json: () => Promise.resolve({
+                    code: "0001",
+                    info: `HTTP ${response.status}: ${response.statusText}`,
+                    data: []
+                })
+            };
+        }
+
+        return response;
+    } catch (error) {
+        console.error("queryUserDrawRecords failed:", error);
+        return {
+            json: () => Promise.resolve({
+                code: "0001",
+                info: "网络请求失败",
+                data: []
+            })
+        };
+    }
+}
+
