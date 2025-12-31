@@ -24,6 +24,8 @@ export function LuckyGridPage({handleRefresh}) {
     const [isTenDrawing, setIsTenDrawing] = useState(false)
     // 使用 ref 来跟踪十连抽是否已完成，避免 setState 的异步更新问题
     const isTenDrawInProgress = useRef(false)
+    // 用于标记当前抽奖类型，确保onEnd回调正确判断
+    const currentDrawType = useRef<'single' | 'ten' | null>(null)
     // refresh 状态用于触发 StrategyRuleWeight 更新
     const [refresh, setRefresh] = useState(0)
 
@@ -171,6 +173,8 @@ export function LuckyGridPage({handleRefresh}) {
         setIsTenDrawing(true);
         isTenDrawInProgress.current = true;
 
+        // 设置当前为十连抽模式
+        currentDrawType.current = 'ten';
         // 立即播放动画
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
@@ -246,7 +250,7 @@ export function LuckyGridPage({handleRefresh}) {
                 console.log("显示的奖品列表:", prizeList);
 
                 alert(`十连抽完成！\n\n奖品列表【${prizeList}】`);
-            }, 5000);
+            }, 4000);
 
         } catch (error) {
             console.error("十连抽失败:", error);
@@ -294,6 +298,8 @@ export function LuckyGridPage({handleRefresh}) {
                     if (isTenDrawing || isTenDrawInProgress.current) {
                         return;
                     }
+                    // 设置当前为单抽模式
+                    currentDrawType.current = 'single';
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
                     myLucky.current.play()
@@ -311,8 +317,12 @@ export function LuckyGridPage({handleRefresh}) {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
                     prize => {
+                        // 获取当前抽奖类型并重置
+                        const drawType = currentDrawType.current;
+                        currentDrawType.current = null;
+                        
                         // 如果是十连抽模式，不执行单抽的结果展示
-                        if (isTenDrawing || isTenDrawInProgress.current) {
+                        if (drawType === 'ten' || isTenDrawing || isTenDrawInProgress.current) {
                             return;
                         }
                         // 加载数据

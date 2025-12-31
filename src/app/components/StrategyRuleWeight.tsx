@@ -2,8 +2,6 @@ import {queryRaffleStrategyRuleWeight} from "@/apis";
 import {useEffect, useState} from "react";
 import {StrategyRuleWeightVO} from "@/types/StrategyRuleWeightVO";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function StrategyRuleWeight({refresh, setRefresh}: {refresh: number, setRefresh?: (value: number) => void}) {
 
