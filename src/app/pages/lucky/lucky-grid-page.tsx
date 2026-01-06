@@ -24,8 +24,12 @@ export function LuckyGridPage({handleRefresh}) {
     const [isTenDrawing, setIsTenDrawing] = useState(false)
     // 使用 ref 来跟踪十连抽是否已完成，避免 setState 的异步更新问题
     const isTenDrawInProgress = useRef(false)
-    // 用于标记当前抽奖类型，确保onEnd回调正确判断
-    const currentDrawType = useRef<'single' | 'ten' | null>(null)
+    // 用于标记十连抽是否已经完成并显示结果，防止onEnd触发单抽结果
+    const isTenDrawCompleted = useRef(false)
+    // 十连抽结果数据，用于 onEnd 回调中展示
+    const [lastDrawIsTen, setLastDrawIsTen] = useState(false)
+    const [lastTenDrawResults, setLastTenDrawResults] = useState<DrawResult[]>([])
+    const [lastOneDrawResult, setLastOneDrawResult] = useState<any>(null)
     // refresh 状态用于触发 StrategyRuleWeight 更新
     const [refresh, setRefresh] = useState(0)
 
@@ -156,12 +160,17 @@ export function LuckyGridPage({handleRefresh}) {
 
         triggerRefresh()
 
+        // 保存单抽结果供 onEnd 使用
+        setLastDrawIsTen(false)
+        setLastOneDrawResult(data)
+
         // 为了方便测试，mock 的接口直接返回 awardIndex 也就是奖品列表中第几个奖品。
         return data.awardIndex - 1;
     }
 
     /**
      * 十连抽处理函数
+     * 流程：点击按钮 → play() → 100ms后调用API → 用maxAwardIndex停止 → onEnd显示结果
      */
     const tenDrawHandle = async () => {
         if (isTenDrawing || isTenDrawInProgress.current) return;
@@ -172,95 +181,90 @@ export function LuckyGridPage({handleRefresh}) {
 
         setIsTenDrawing(true);
         isTenDrawInProgress.current = true;
+        isTenDrawCompleted.current = false;  // 重置完成标志
+        setLastDrawIsTen(false);  // 先重置，等API成功后再设置为true
 
-        // 设置当前为十连抽模式
-        currentDrawType.current = 'ten';
-        // 立即播放动画
+        // 1. 先开始播放动画
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
         myLucky.current.play();
 
-        // 调用十连抽API
-        try {
-            const result = await tenDraw(userId, activityId);
-            const response = await result.json();
+        // 2. 100ms 后调用十连抽API
+        setTimeout(async () => {
+            try {
+                const result = await tenDraw(userId, activityId);
+                const response = await result.json();
 
-            // 调试日志：输出后端返回的原始数据
-            console.log("十连抽后端返回数据:", response);
+                const {code, info, data} = response;
 
-            const {code, info, data} = response;
+                if (code !== "0000") {
+                    console.error("十连抽失败:", code, info);
+                    window.alert("十连抽失败 code:" + code + " info:" + info);
+                    setIsTenDrawing(false);
+                    isTenDrawInProgress.current = false;
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    myLucky.current.stop(0);
+                    return;
+                }
 
-            if (code !== "0000") {
-                console.error("十连抽失败:", code, info);
-                window.alert("十连抽失败 code:" + code + " info:" + info);
-                setIsTenDrawing(false);
-                isTenDrawInProgress.current = false;
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                myLucky.current.stop(0);
-                return;
-            }
+                // 检查数据结构
+                if (!data) {
+                    console.error("十连抽失败：data为空");
+                    window.alert("十连抽失败：未返回抽奖结果");
+                    setIsTenDrawing(false);
+                    isTenDrawInProgress.current = false;
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    myLucky.current.stop(0);
+                    return;
+                }
 
-            // 检查数据结构
-            if (!data) {
-                console.error("十连抽失败：data为空");
-                window.alert("十连抽失败：未返回抽奖结果");
-                setIsTenDrawing(false);
-                isTenDrawInProgress.current = false;
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                myLucky.current.stop(0);
-                return;
-            }
+                // 获取抽奖结果数组
+                const drawResults = data.drawResults || data;
 
-            // 获取抽奖结果数组
-            const drawResults = data.drawResults || data;
+                if (!drawResults || drawResults.length === 0) {
+                    console.error("十连抽失败：抽奖结果数组为空");
+                    window.alert("十连抽失败：未返回抽奖结果");
+                    setIsTenDrawing(false);
+                    isTenDrawInProgress.current = false;
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
+                    myLucky.current.stop(0);
+                    return;
+                }
 
-            if (!drawResults || drawResults.length === 0) {
-                console.error("十连抽失败：抽奖结果数组为空");
-                window.alert("十连抽失败：未返回抽奖结果");
-                setIsTenDrawing(false);
-                isTenDrawInProgress.current = false;
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                myLucky.current.stop(0);
-                return;
-            }
+                // 保存十连抽结果供 onEnd 使用
+                setLastTenDrawResults(drawResults);
+                setLastDrawIsTen(true);
 
-            // 调试日志：输出抽奖结果
-            console.log("十连抽结果数组:", drawResults);
-            console.log("抽奖结果数量:", drawResults.length);
+                // 调试日志：输出抽奖结果
+                console.log("十连抽结果数组:", drawResults);
+                console.log("抽奖结果数量:", drawResults.length);
 
-            // 动画播放2.5秒后停止（停在任意位置即可，主要是视觉效果）
-            setTimeout(() => {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-expect-error
-                myLucky.current.stop(0); // 停在第0个位置
-            }, 2500);
+                // 3. 使用 maxAwardIndex 计算停留位置（选择"代表性奖品"）
+                const maxAwardIndex = Math.max(...drawResults.map((item: DrawResult) => item.awardIndex));
+                const stopIndex = maxAwardIndex - 1;
+                console.log("maxAwardIndex:", maxAwardIndex, "停留索引:", stopIndex);
 
-            // 动画结束后显示所有结果
-            setTimeout(() => {
-                setIsTenDrawing(false);
-                isTenDrawInProgress.current = false;
+                // 更新数据
                 triggerRefresh();
-                queryRaffleAwardListHandle();
 
-                // 按照后端返回的顺序构建奖品列表字符串
-                const prizeList = drawResults.map((r: DrawResult) => r.awardTitle).join('、');
-                console.log("显示的奖品列表:", prizeList);
+                // 4. 停止动画（会触发 onEnd 回调）
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                myLucky.current.stop(stopIndex);
 
-                alert(`十连抽完成！\n\n奖品列表【${prizeList}】`);
-            }, 4000);
-
-        } catch (error) {
-            console.error("十连抽失败:", error);
-            window.alert("十连抽失败：" + error);
-            setIsTenDrawing(false);
-            isTenDrawInProgress.current = false;
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            myLucky.current.stop(0);
-        }
+            } catch (error) {
+                console.error("十连抽失败:", error);
+                window.alert("十连抽失败：" + error);
+                setIsTenDrawing(false);
+                isTenDrawInProgress.current = false;
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-expect-error
+                myLucky.current.stop(0);
+            }
+        }, 100);  // 100ms 后调用API
     }
 
     const [buttons] = useState([
@@ -298,8 +302,6 @@ export function LuckyGridPage({handleRefresh}) {
                     if (isTenDrawing || isTenDrawInProgress.current) {
                         return;
                     }
-                    // 设置当前为单抽模式
-                    currentDrawType.current = 'single';
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
                     myLucky.current.play()
@@ -317,19 +319,33 @@ export function LuckyGridPage({handleRefresh}) {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-expect-error
                     prize => {
-                        // 获取当前抽奖类型并重置
-                        const drawType = currentDrawType.current;
-                        currentDrawType.current = null;
-                        
-                        // 如果是十连抽模式，不执行单抽的结果展示
-                        if (drawType === 'ten' || isTenDrawing || isTenDrawInProgress.current) {
-                            return;
-                        }
-                        // 加载数据
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        console.log("onEnd被触发", { lastDrawIsTen, isTenDrawing, isTenDrawInProgress: isTenDrawInProgress.current, isTenDrawCompleted: isTenDrawCompleted.current });
+
+                        // 加载数据（无论十连抽还是单抽都需要刷新）
                         queryRaffleAwardListHandle().then(r => {
                         });
-                        // 展示奖品
+
+                        // 如果是十连抽模式
+                        if (lastDrawIsTen) {
+                            console.log("十连抽结果展示");
+                            const prizeTitles = lastTenDrawResults.map(r => r.awardTitle).join('、');
+                            alert(`十连抽完成！\n\n奖品列表【${prizeTitles}】`);
+
+                            // 重置所有状态
+                            setIsTenDrawing(false);
+                            isTenDrawInProgress.current = false;
+                            isTenDrawCompleted.current = false;
+                            setLastDrawIsTen(false);
+                            return;
+                        }
+
+                        // 单抽结果展示
+                        if (isTenDrawing || isTenDrawInProgress.current || isTenDrawCompleted.current) {
+                            console.log("跳过单抽结果展示");
+                            return;
+                        }
+
+                        // 展示单抽奖品
                         alert('恭喜抽中奖品💐【' + prize.fonts[0].text + '】')
                     }
                 }>
