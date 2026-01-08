@@ -29,7 +29,9 @@ export function LuckyGridPage({handleRefresh}) {
     // 十连抽结果数据，用于 onEnd 回调中展示
     const [lastDrawIsTen, setLastDrawIsTen] = useState(false)
     const [lastTenDrawResults, setLastTenDrawResults] = useState<DrawResult[]>([])
-    const [lastOneDrawResult, setLastOneDrawResult] = useState<any>(null)
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_lastOneDrawResult, setLastOneDrawResult] = useState<unknown>(null)
     // refresh 状态用于触发 StrategyRuleWeight 更新
     const [refresh, setRefresh] = useState(0)
 
@@ -322,6 +324,7 @@ export function LuckyGridPage({handleRefresh}) {
                         console.log("onEnd被触发", { lastDrawIsTen, isTenDrawing, isTenDrawInProgress: isTenDrawInProgress.current, isTenDrawCompleted: isTenDrawCompleted.current });
 
                         // 加载数据（无论十连抽还是单抽都需要刷新）
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                         queryRaffleAwardListHandle().then(r => {
                         });
 
