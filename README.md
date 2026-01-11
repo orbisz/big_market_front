@@ -1,6 +1,6 @@
 <div align="center">
 
-# 幸运营销汇 - 大抽奖营销平台前端
+# 幸运营销汇 - 积分抽奖营销平台前端
 
 [![Next.js](https://img.shields.io/badge/Next.js-15.3-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.0-blue?logo=react)](https://react.dev/)
